@@ -1,0 +1,206 @@
+{
+  "skill_name": "laravel-tyro",
+  "description": "Test cases for Laravel Tyro skill - covers installation, commands, middleware, Blade directives, and API usage",
+  "evals": [
+    {
+      "id": 1,
+      "name": "installation-help",
+      "prompt": "I have a Laravel 13 project and want to add authentication with roles and permissions. I heard about Tyro. How do I install it?",
+      "expected_output": "Should explain the one-command installation: `composer require hasinhayder/tyro` followed by `php artisan tyro:sys-install`. Should mention what this command does (installs Sanctum, runs migrations, seeds data).",
+      "assertions": [
+        {
+          "name": "mentions_composer_require",
+          "text": "Response should include `composer require hasinhayder/tyro`",
+          "type": "contains_text",
+          "value": "composer require hasinhayder/tyro"
+        },
+        {
+          "name": "mentions_sys_install",
+          "text": "Response should include `php artisan tyro:sys-install`",
+          "type": "contains_text",
+          "value": "tyro:sys-install"
+        },
+        {
+          "name": "explains_what_sys_install_does",
+          "text": "Response should explain what sys-install does",
+          "type": "contains_text",
+          "value": "Sanctum"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "create-role-and-privilege",
+      "prompt": "Using Tyro, I need to create a new role called 'Author' and a privilege called 'publish.articles'. How do I do this via CLI commands?",
+      "expected_output": "Should provide the CLI commands: `php artisan tyro:role-create --name=\"Author\" --slug=\"author\"` and `php artisan tyro:privilege-create --name=\"Publish Articles\" --slug=\"publish.articles\"` and then attach with `tyro:privilege-attach`.",
+      "assertions": [
+        {
+          "name": "provides_role_create_command",
+          "text": "Should include tyro:role-create command",
+          "type": "contains_text",
+          "value": "tyro:role-create"
+        },
+        {
+          "name": "provides_privilege_create_command",
+          "text": "Should include tyro:privilege-create command",
+          "type": "contains_text",
+          "value": "tyro:privilege-create"
+        },
+        {
+          "name": "explains_attaching_privilege",
+          "text": "Should explain how to attach privilege to role",
+          "type": "contains_text",
+          "value": "attach"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "protect-route-middleware",
+      "prompt": "I have a route at GET /admin/dashboard that should only be accessible by users with the 'admin' role. How do I protect this route with Tyro middleware?",
+      "expected_output": "Should show route protection using middleware like: `Route::middleware(['auth:sanctum', 'role:admin'])->get('admin/dashboard', ...)` or similar.",
+      "assertions": [
+        {
+          "name": "uses_auth_middleware",
+          "text": "Should include auth middleware",
+          "type": "contains_text",
+          "value": "auth:sanctum"
+        },
+        {
+          "name": "uses_role_middleware",
+          "text": "Should include role middleware",
+          "type": "contains_text",
+          "value": "role:admin"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "blade-directive-usage",
+      "prompt": "In my Blade template, I want to show a 'Delete' button only if the user has the 'articles.delete' privilege. How do I do this with Tyro?",
+      "expected_output": "Should show the `@hasPrivilege('articles.delete')` directive with the button inside.",
+      "assertions": [
+        {
+          "name": "uses_has_privilege_directive",
+          "text": "Should use @hasPrivilege directive",
+          "type": "contains_text",
+          "value": "@hasPrivilege"
+        },
+        {
+          "name": "includes_correct_privilege_slug",
+          "text": "Should include articles.delete privilege",
+          "type": "contains_text",
+          "value": "articles.delete"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "check-permissions-controller",
+      "prompt": "In my Laravel controller, how do I check if the authenticated user has a specific role or privilege using Tyro's HasTyroRoles trait?",
+      "expected_output": "Should show methods like `$user->hasRole('admin')`, `$user->hasPrivilege('articles.edit')`, or `$user->can('articles.publish')`.",
+      "assertions": [
+        {
+          "name": "shows_has_role_method",
+          "text": "Should mention hasRole() method",
+          "type": "contains_text",
+          "value": "hasRole"
+        },
+        {
+          "name": "shows_permission_check_method",
+          "text": "Should mention privilege checking (hasPrivilege or can)",
+          "type": "contains_any",
+          "value": ["hasPrivilege", "can("]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "suspend-user",
+      "prompt": "A user violated our policies. How do I suspend them using Tyro? And does this revoke their tokens?",
+      "expected_output": "Should explain CLI command `php artisan tyro:user-suspend --user=email@example.com --reason=\"reason\"` or code `$user->suspend('reason')`. Should confirm that YES, it revokes all tokens automatically.",
+      "assertions": [
+        {
+          "name": "provides_suspend_command_or_method",
+          "text": "Should show suspension method",
+          "type": "contains_any",
+          "value": ["user-suspend", "->suspend("]
+        },
+        {
+          "name": "confirms_token_revocation",
+          "text": "Should confirm tokens are revoked",
+          "type": "contains_text",
+          "value": "token"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "api-endpoints",
+      "prompt": "I want to use Tyro's REST API to assign a role to a user. What's the endpoint and how do I call it?",
+      "expected_output": "Should show the endpoint: `POST /api/users/{user}/roles` with a body like `{\"role_id\": 4}` and Bearer token authentication.",
+      "assertions": [
+        {
+          "name": "shows_correct_endpoint",
+          "text": "Should include the roles endpoint",
+          "type": "contains_text",
+          "value": "/users/"
+        },
+        {
+          "name": "mentions_authentication",
+          "text": "Should mention Bearer token",
+          "type": "contains_text",
+          "value": "Bearer"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "list-commands",
+      "prompt": "I need to see all available Tyro CLI commands. What command do I run?",
+      "expected_output": "Should show `php artisan list tyro` or explain that running `php artisan` will show tyro commands listed under tyro namespace.",
+      "assertions": [
+        {
+          "name": "shows_command_list_command",
+          "text": "Should show how to list tyro commands",
+          "type": "contains_any",
+          "value": ["artisan list tyro", "tyro:"]
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "default-admin-credentials",
+      "prompt": "I just ran `php artisan tyro:seed-all`. What's the default admin credentials to login?",
+      "expected_output": "Should state: Email: `admin@tyro.project`, Password: `tyro`",
+      "assertions": [
+        {
+          "name": "provides_correct_email",
+          "text": "Should include admin@tyro.project",
+          "type": "contains_text",
+          "value": "admin@tyro.project"
+        },
+        {
+          "name": "provides_correct_password",
+          "text": "Should include password tyro",
+          "type": "contains_text",
+          "value": "tyro"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "troubleshooting-commands-not-found",
+      "prompt": "I installed Tyro but `php artisan tyro:sys-install` says command not found. What's wrong?",
+      "expected_output": "Should explain that `TYRO_DISABLE_COMMANDS` might be set to true in .env, or suggest running `composer dump-autoload`.",
+      "assertions": [
+        {
+          "name": "mentions_disable_commands_env",
+          "text": "Should mention TYRO_DISABLE_COMMANDS",
+          "type": "contains_text",
+          "value": "TYRO_DISABLE_COMMANDS"
+        }
+      ]
+    }
+  ]
+}
